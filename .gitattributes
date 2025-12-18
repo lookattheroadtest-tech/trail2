@@ -1,0 +1,2 @@
+*.har filter=lfs diff=lfs merge=lfs -text
+*.HAR filter=lfs diff=lfs merge=lfs -text
