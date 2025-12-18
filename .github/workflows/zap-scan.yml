@@ -1,4 +1,4 @@
-name: ZAP Authenticated Full Scan (HAR)
+name: ZAP Active Scan (HAR Only)
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  zap-full-scan:
+  zap-har-active-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,28 +18,28 @@ jobs:
         chmod -R 777 .
         mkdir -p zap-output
 
-    - name: Run ZAP Full Scan (Authenticated via HAR)
+    - name: Run ZAP Active Scan on HAR Requests Only
       run: |
         docker run --rm \
           -v "$(pwd):/zap/wrk" \
           ghcr.io/zaproxy/zaproxy:stable \
           zap-full-scan.py \
           -t https://valuelabs-admin.adhoc.stabilthus.io \
-          -r zap-report.html \
-          -x zap-report.xml \
+          -a \
           -j \
           -I \
           -d \
-          -a \
-          -z "-config spider.maxDuration=180 \
-              -config spider.maxDepth=10 \
-              -config spider.postform=true \
-              -config spider.processform=true \
-              -config spider.parsecomments=true \
-              -config spider.handleParameters=true \
-              -config ajaxSpider.enabled=false \
-              -config scanner.excludeurls=^https://valuelabs-admin\.adhoc\.stabilthus\.io/logout$ \
-              -config importHarFile=/zap/wrk/login.HAR"
+          -r zap-report.html \
+          -x zap-report.xml \
+          -z "
+            -config importHarFile=/zap/wrk/login.HAR
+            -config spider.enabled=false
+            -config ajaxSpider.enabled=false
+            -config spider.maxDuration=0
+            -config scanner.attackOnStart=true
+            -config scanner.threadPerHost=5
+            -config scanner.delayInMs=0
+          "
 
     - name: Upload ZAP HTML Report
       uses: actions/upload-artifact@v4
