@@ -15,13 +15,13 @@ jobs:
 
     - name: Prepare workspace
       run: |
-        chmod -R 777 .
         mkdir -p zap-output
+        chmod -R 777 zap-output
 
     - name: Run ZAP Automation HAR Scan
       run: |
         docker run --rm \
-          -v "$(pwd):/zap/wrk:rw" \   # ensure read/write access
+          -v '${{ github.workspace }}:/zap/wrk:rw' \
           ghcr.io/zaproxy/zaproxy:stable \
           zap.sh -cmd \
           -autorun /zap/wrk/automation.yaml
