@@ -21,7 +21,7 @@ jobs:
     - name: Run ZAP Automation HAR Scan
       run: |
         docker run --rm \
-          -v "$(pwd):/zap/wrk" \
+          -v "$(pwd):/zap/wrk:rw" \   # ensure read/write access
           ghcr.io/zaproxy/zaproxy:stable \
           zap.sh -cmd \
           -autorun /zap/wrk/automation.yaml
