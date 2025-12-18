@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        lfs: true   # ✅ REQUIRED for HAR stored in Git LFS
 
     - name: Prepare workspace
       run: |
