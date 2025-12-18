@@ -1,0 +1,44 @@
+env:
+  contexts:
+    - name: har-context
+      urls:
+        - https://valuelabs-admin.adhoc.stabilthus.io
+      includePaths:
+        - https://valuelabs-admin.adhoc.stabilthus.io.*
+
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  # 1️⃣ Import HAR (GET, POST, params, JSON, cookies)
+  - type: import
+    parameters:
+      type: har
+      fileName: /zap/wrk/login.HAR
+
+  # 2️⃣ Active scan ONLY what exists in HAR
+  - type: activeScan
+    parameters:
+      context: har-context
+      policy: Default Policy
+      maxScanDurationInMins: 30
+      threadPerHost: 5
+      delayInMs: 0
+
+  # 3️⃣ Generate HTML report
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk/zap-output
+      reportFile: zap-report.html
+      reportTitle: "ZAP HAR Active Scan Report"
+
+  # 4️⃣ Generate XML report
+  - type: report
+    parameters:
+      template: traditional-xml
+      reportDir: /zap/wrk/zap-output
+      reportFile: zap-report.xml
+      reportTitle: "ZAP HAR Active Scan Report (XML)"
