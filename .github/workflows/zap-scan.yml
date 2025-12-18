@@ -1,4 +1,4 @@
-name: ZAP Active Scan (HAR Only)
+name: ZAP Active Scan (HAR Only – Automation)
 
 on:
   workflow_dispatch:
@@ -18,37 +18,22 @@ jobs:
         chmod -R 777 .
         mkdir -p zap-output
 
-    - name: Run ZAP Active Scan on HAR Requests Only
+    - name: Run ZAP Automation HAR Scan
       run: |
         docker run --rm \
           -v "$(pwd):/zap/wrk" \
           ghcr.io/zaproxy/zaproxy:stable \
-          zap-full-scan.py \
-          -t https://valuelabs-admin.adhoc.stabilthus.io \
-          -a \
-          -j \
-          -I \
-          -d \
-          -r zap-report.html \
-          -x zap-report.xml \
-          -z "
-            -config importHarFile=/zap/wrk/login.HAR
-            -config spider.enabled=false
-            -config ajaxSpider.enabled=false
-            -config spider.maxDuration=0
-            -config scanner.attackOnStart=true
-            -config scanner.threadPerHost=5
-            -config scanner.delayInMs=0
-          "
+          zap.sh -cmd \
+          -autorun /zap/wrk/automation.yaml
 
     - name: Upload ZAP HTML Report
       uses: actions/upload-artifact@v4
       with:
         name: zap-html-report
-        path: zap-report.html
+        path: zap-output/zap-report.html
 
     - name: Upload ZAP XML Report
       uses: actions/upload-artifact@v4
       with:
         name: zap-xml-report
-        path: zap-report.xml
+        path: zap-output/zap-report.xml
